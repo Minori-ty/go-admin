@@ -4,24 +4,34 @@ import (
 	"context"
 	"fmt"
 	"main/model"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type LoginService struct {
-	ctx context.Context
+type LoginServiceImpl struct {
+	collection *mongo.Collection
+	ctx        context.Context
 }
 
-func NewLoginService() LoginService {
-	return LoginService{}
-}
-
-func (u LoginService) Login(loginform *model.LoginForm) model.Login {
-
-	fmt.Println(loginform)
-	login := model.Login{
-		Code:     "200",
-		Message:  "登录成功",
-		Username: "守夜人",
-		Token:    "bearToken abcdefg",
+func NewLoginService(collection *mongo.Collection, ctx context.Context) LoginServiceInt {
+	return &LoginServiceImpl{
+		ctx:        ctx,
+		collection: collection,
 	}
-	return login
+}
+
+func (u *LoginServiceImpl) Login(loginform *model.LoginForm) error {
+	// var user *model.User
+	fmt.Println(loginform)
+	_, err := u.collection.InsertOne(u.ctx, loginform)
+	// query := bson.D{bson.E{Key: "user_name", Value: "user"}}
+	// err := u.collection.FindOne(u.ctx, query).Decode(&user)
+	// fmt.Println(u.collection)
+	// _, err := u.collection.InsertOne(u.ctx, model.User{
+	// 	Id:       1,
+	// 	Username: "v2",
+	// 	Age:      24,
+	// })
+
+	return err
 }

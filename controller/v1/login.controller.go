@@ -1,30 +1,44 @@
 package v1
 
 import (
-	"fmt"
 	"main/model"
 	"main/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type LoginController struct {
-	LoginService service.LoginService
+	LoginService service.LoginServiceInt
 }
 
-func NewLoginController(LoginService service.LoginService) LoginController {
-	return LoginController{}
-}
-
-func (u LoginController) Login(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-	loginform := &model.LoginForm{
-		Username: username,
-		Password: password,
+func NewLoginController(LoginService service.LoginServiceInt) LoginController {
+	return LoginController{
+		LoginService: LoginService,
 	}
-	fmt.Printf("%#v", loginform)
-	c.JSON(200, u.LoginService.Login(loginform))
+}
+
+func (u *LoginController) Login(ctx *gin.Context) {
+	var form model.LoginForm
+	if err := ctx.ShouldBind(&form); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	err := u.LoginService.Login(&form)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{
+			"message": "添加失败",
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"code":    2000,
+		"message": "添加成功",
+	})
 }
 
 func (u *LoginController) RegisterRoutes(r *gin.RouterGroup) {

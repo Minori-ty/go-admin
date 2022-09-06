@@ -18,7 +18,7 @@ func NewUserController(UserService service.UserService) UserController {
 }
 
 func (u *UserController) GetUser(c *gin.Context) {
-	var username = "saff"
+	username := c.Query("name")
 	user := u.UserService.GetUser(username)
 	c.JSON(http.StatusOK, user)
 }
