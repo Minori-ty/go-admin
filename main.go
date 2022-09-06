@@ -1,14 +1,20 @@
 package main
 
 import (
-	"main/controller"
+	"main/database"
+	"main/middleware"
+	"main/server"
 
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	database.NewMongoDB()
+}
 func main() {
 	r := gin.Default()
-	controller.RegisterUserRoutes(&r.RouterGroup)
-	controller.RegisterArticleRoutes(&r.RouterGroup)
+	r.Use(middleware.Cors())
+	server.RegisterRoutes(r)
+
 	r.Run()
 }
