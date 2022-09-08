@@ -22,13 +22,13 @@ func NewUserService(collection *mongo.Collection, ctx context.Context) UserServi
 }
 
 func (u UserService) GetUser(name string) model.User {
-	var user model.User
+	var user *model.User
 	query := bson.D{bson.E{Key: "username", Value: name}}
-	err := u.collection.FindOne(u.ctx, query).Decode(user)
+	err := u.collection.FindOne(u.ctx, query).Decode(&user)
 	if err != nil {
 		fmt.Println(name)
 		fmt.Printf("%#v", user)
 		fmt.Println("查询失败")
 	}
-	return user
+	return *user
 }

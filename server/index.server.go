@@ -10,6 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+func RegisterRoutes(r *gin.Engine, collection *mongo.Collection, ctx context.Context) {
+	registerV1Routes(r, collection, ctx)
+	registerV2Routes(r, collection, ctx)
+}
+
 func registerV1Routes(r *gin.Engine, collection *mongo.Collection, ctx context.Context) {
 	route := r.Group("/v1")
 
@@ -28,10 +33,4 @@ func registerV2Routes(r *gin.Engine, collection *mongo.Collection, ctx context.C
 	AdminService := service.NewAdminService()
 	AdminController := v2.NewAdminController(AdminService)
 	AdminController.RegisterRoutes(route)
-}
-
-func RegisterRoutes(r *gin.Engine, collection *mongo.Collection, ctx context.Context) {
-	registerV1Routes(r, collection, ctx)
-
-	registerV2Routes(r, collection, ctx)
 }
